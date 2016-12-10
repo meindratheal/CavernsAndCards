@@ -19,4 +19,9 @@ public abstract class Card
 	{
 		return name;
 	}
+	
+	@Override
+	public abstract boolean equals(Object obj);
+	@Override
+	public abstract int hashCode();
 }
