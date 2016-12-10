@@ -3,7 +3,6 @@ package meindratheal.collab.cavernsandcardsproto;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.hamcrest.core.IsCollectionContaining;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -55,7 +54,8 @@ public class DeckTest
 		}
 	}
 	
-	@Test public void testCopyConstructor()
+	@Test
+	public void testCopyConstructor()
 	{
 		final List<Card> cardList = new ArrayList<>(
 				Arrays.asList(new AttackCard("A", 1),
@@ -92,5 +92,11 @@ public class DeckTest
 		assertEquals(new AttackCard("E", 5), deck.drawCard());
 		assertEquals(0, deck.size());
 		assertTrue(deck.isEmpty());
+	}
+	
+	@Test(expected=IllegalStateException.class)
+	public void testDrawFromEmptyDeck()
+	{
+		new Deck().drawCard();
 	}
 }
