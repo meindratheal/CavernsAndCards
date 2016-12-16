@@ -24,6 +24,16 @@ public final class RulesConstants
 	}
 
 	/**
+	 * The number of cards each player draws from their deck when starting a
+	 * game.
+	 * @return The initial hand size.
+	 */
+	public static int initialHandSize()
+	{
+		return 3;
+	}
+
+	/**
 	 * The maximum number of cards allowed in a player's hand at the end of
 	 * their turn. This limit may be exceeded at any other point, but if a
 	 * player's hand has more cards than this value at the end of their turn
