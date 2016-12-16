@@ -3,20 +3,23 @@ package meindratheal.collab.cavernsandcardsproto;
 import static com.google.common.base.Preconditions.*;
 
 /**
- * A Creature. Creatures are the in-game avatars of the players, and have a name
- * and hit points.
+ * A Creature. Creatures are the in-game avatars of the players, and have a
+ * name, hit points, and AC.
  * @author Meindratheal
  */
 public class Creature
 {
 	private final String name;
 	private int hp;
+	private final int ac;
 
-	public Creature(final String name, final int hp)
+	public Creature(final String name, final int hp, final int ac)
 	{
 		this.name = checkNotNull(name, "name");
 		this.hp = hp;
+		this.ac = ac;
 		checkArgument(hp > 0, "hp must be positive");
+		checkArgument(ac >= 0, "ac must be non-negative");
 	}
 
 	public String name()
@@ -27,6 +30,11 @@ public class Creature
 	public int hp()
 	{
 		return hp;
+	}
+
+	public int ac()
+	{
+		return ac;
 	}
 
 	public void dealDamage(final int damage)
