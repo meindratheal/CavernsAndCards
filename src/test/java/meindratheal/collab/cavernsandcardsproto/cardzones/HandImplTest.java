@@ -1,5 +1,6 @@
-package meindratheal.collab.cavernsandcardsproto;
+package meindratheal.collab.cavernsandcardsproto.cardzones;
 
+import meindratheal.collab.cavernsandcardsproto.AttackCard;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -8,12 +9,12 @@ import static org.junit.Assert.*;
  *
  * @author Meindratheal
  */
-public class HandTest {
-
+public class HandImplTest
+{
 	@Test
 	public void testDefaultConstructor()
 	{
-		final Hand hand = new Hand();
+		final HandImpl hand = new HandImpl();
 		assertEquals(0, hand.size());
 		//Try peeking and removing.
 		try
@@ -35,11 +36,11 @@ public class HandTest {
 			//Expected.
 		}
 	}
-	
+
 	@Test
 	public void testAddCards()
 	{
-		final Hand hand = new Hand();
+		final HandImpl hand = new HandImpl();
 		//Add some without giving an index.
 		hand.add(new AttackCard("A", 1, 1));
 		hand.add(new AttackCard("B", 2, 2));
@@ -73,11 +74,11 @@ public class HandTest {
 		assertEquals(new AttackCard("C", 3, 3), hand.peek(4));
 		assertEquals(new AttackCard("D", 4, 4), hand.peek(5));
 	}
-	
+
 	@Test
 	public void testAddCardsInvalidPositions()
 	{
-		final Hand hand = new Hand();
+		final HandImpl hand = new HandImpl();
 		hand.add(new AttackCard("A", 1, 1));
 		hand.add(new AttackCard("B", 2, 2));
 		hand.add(new AttackCard("C", 3, 3));
@@ -100,11 +101,11 @@ public class HandTest {
 			//Expected.
 		}
 	}
-	
+
 	@Test
 	public void testRemoveCards()
 	{
-		final Hand hand = new Hand();
+		final HandImpl hand = new HandImpl();
 		hand.add(new AttackCard("A", 1, 1));
 		hand.add(new AttackCard("B", 2, 2));
 		hand.add(new AttackCard("C", 3, 3));
@@ -132,6 +133,6 @@ public class HandTest {
 		assertEquals(new AttackCard("B", 2, 2), hand.peek(0));
 		assertEquals(new AttackCard("D", 4, 4), hand.peek(1));
 		assertEquals(new AttackCard("E", 5, 5), hand.peek(2));
-		
+
 	}
 }

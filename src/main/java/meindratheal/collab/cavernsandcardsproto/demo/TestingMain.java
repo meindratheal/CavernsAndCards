@@ -3,10 +3,11 @@ package meindratheal.collab.cavernsandcardsproto.demo;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import meindratheal.collab.cavernsandcardsproto.AttackCard;
-import meindratheal.collab.cavernsandcardsproto.Creature;
 import meindratheal.collab.cavernsandcardsproto.GameController;
 import meindratheal.collab.cavernsandcardsproto.GamePlayer;
-import meindratheal.collab.cavernsandcardsproto.Hand;
+import meindratheal.collab.cavernsandcardsproto.cardzones.ReadableHand;
+import meindratheal.collab.cavernsandcardsproto.creature.CreatureImpl;
+import meindratheal.collab.cavernsandcardsproto.creature.ModifiableCreature;
 
 /**
  *
@@ -16,20 +17,20 @@ public final class TestingMain
 {
 	public static void main(String[] args)
 	{
-		final Creature c1 = new Creature("Tank", 100, 13);
-		final Creature c2 = new Creature("Rogue", 70, 17);
+		final ModifiableCreature c1 = new CreatureImpl("Tank", 100, 13);
+		final ModifiableCreature c2 = new CreatureImpl("Rogue", 70, 17);
 		final GamePlayer playerOne = new GamePlayer(c1,
 													TestingCards.createDeck(),
 													TestingMain::chooseCard);
 		final GamePlayer playerTwo = new GamePlayer(c2,
 													TestingCards.createDeck(),
-													TestingMain::chooseCard);
+													(hand) -> (int)(Math.random() * hand.size()));
 		final GameController control = new GameController(playerOne, playerTwo);
 		final int winner = control.play();
 		System.out.printf("Player %d wins%n", winner);
 	}
 
-	private static int chooseCard(final Hand hand)
+	private static int chooseCard(final ReadableHand hand)
 	{
 		//Note that users deal with the range [1, size].
 		System.out.println("Your hand:");

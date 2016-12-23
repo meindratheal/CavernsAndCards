@@ -1,52 +1,49 @@
-package meindratheal.collab.cavernsandcardsproto;
+package meindratheal.collab.cavernsandcardsproto.cardzones;
 
 import java.util.ArrayList;
 import java.util.List;
+import meindratheal.collab.cavernsandcardsproto.Card;
 
 import static com.google.common.base.Preconditions.*;
 
 /**
- * A discard pile is a list of cards, in a particular order. A discard pile
- * starts empty. Unlike a deck, a discard pile allows random access removal and
- * peeking. The following operations are supported:
- * <ul><li>The discard pile size can be queried with {@link #size()}.</li>
- * <li>A card can be placed on the top of the discard pile with
- * {@link #discard(Card)}.</li>
- * <li>Any card in the pile can be looked at without removal with
- * {@link #peek(int)}, or taken from the pile with {@link remove(int)}. The
- * indices count from the top of the discard pile.</li>
- * </ul>
+ * Basic implementation of the {@link ModifiableDiscardPile} interface. Provides
+ * a default constructor that creates an empty discard pile.
  * @author Meindratheal
  */
-public final class DiscardPile
+public final class DiscardPileImpl implements ModifiableDiscardPile
 {
 	//TODO: Since the most common operation is to discard a card, consider
 	//using a reverse list view. That way, additions to the start of the list
 	//actually add to the bottom, avoiding the need to move the other elements.
 	private final List<Card> cards;
 	
-	public DiscardPile()
+	public DiscardPileImpl()
 	{
 		this.cards = new ArrayList<>();
 	}
 
+	@Override
 	public int size()
 	{
 		return cards.size();
 	}
 
+	@Override
 	public void discard(final Card card)
 	{
 		//Remember, adding to the top.
 		cards.add(0, checkNotNull(card, "card"));
 	}
 
+	@Override
 	public Card peek(final int idx)
 	{
 		checkElementIndex(idx, size(), "idx out of range");
 		return cards.get(idx);
 	}
 
+	@Override
 	public Card remove(final int idx)
 	{
 		checkElementIndex(idx, size(), "idx out of range");

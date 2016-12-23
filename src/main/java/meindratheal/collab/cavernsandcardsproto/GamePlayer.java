@@ -1,6 +1,14 @@
 package meindratheal.collab.cavernsandcardsproto;
 
 import java.util.function.ToIntFunction;
+import meindratheal.collab.cavernsandcardsproto.cardzones.DiscardPileImpl;
+import meindratheal.collab.cavernsandcardsproto.cardzones.HandImpl;
+import meindratheal.collab.cavernsandcardsproto.cardzones.ModifiableDeck;
+import meindratheal.collab.cavernsandcardsproto.cardzones.ModifiableDiscardPile;
+import meindratheal.collab.cavernsandcardsproto.cardzones.ModifiableHand;
+import meindratheal.collab.cavernsandcardsproto.cardzones.ReadableHand;
+import meindratheal.collab.cavernsandcardsproto.creature.ModifiableCreature;
+import meindratheal.collab.cavernsandcardsproto.creature.ReadableCreature;
 
 import static com.google.common.base.Preconditions.*;
 
@@ -13,14 +21,15 @@ import static com.google.common.base.Preconditions.*;
  */
 public final class GamePlayer
 {
-	private final Creature creature;
-	private final Deck deck;
-	private final Hand hand;
-	private final DiscardPile discards;
-	private final ToIntFunction<Hand> chooseAttackCardFn;
+	private final ModifiableCreature creature;
+	private final ModifiableDeck deck;
+	private final ModifiableHand hand;
+	private final ModifiableDiscardPile discards;
+	private final ToIntFunction<ReadableHand> chooseAttackCardFn;
 
-	public GamePlayer(final Creature creature, final Deck deck,
-					  ToIntFunction<Hand> chooseAttackCardFn)
+	public GamePlayer(final ModifiableCreature creature,
+					  final ModifiableDeck deck,
+					  ToIntFunction<ReadableHand> chooseAttackCardFn)
 	{
 		checkNotNull(creature, "creature");
 		checkNotNull(deck, "deck");
@@ -28,9 +37,9 @@ public final class GamePlayer
 		checkArgument(deck.size() > RulesConstants.minDeckSize(),
 					  "initial deck too small");
 		this.creature = creature;
-		this.deck = new Deck(deck);
-		this.hand = new Hand();
-		this.discards = new DiscardPile();
+		this.deck = deck.copy();
+		this.hand = new HandImpl();
+		this.discards = new DiscardPileImpl();
 		this.chooseAttackCardFn = chooseAttackCardFn;
 	}
 
@@ -64,7 +73,7 @@ public final class GamePlayer
 	{
 		deck.shuffle();
 	}
-	
+
 	//Chooses a card from the hand and discards it, returning that card.
 	Card chooseAndPlayCard()
 	{
@@ -73,7 +82,7 @@ public final class GamePlayer
 		System.out.printf("%s plays %s!%n", creature.name(), chosen.name());
 		return chosen;
 	}
-	
+
 	int dealDamage(final int damage)
 	{
 		checkArgument(damage > 0, "damage must be positive");
@@ -81,7 +90,7 @@ public final class GamePlayer
 		return creature.hp();
 	}
 
-	Creature creature()
+	ReadableCreature creature()
 	{
 		return creature;
 	}

@@ -2,7 +2,8 @@ package meindratheal.collab.cavernsandcardsproto.demo;
 
 import java.util.Arrays;
 import meindratheal.collab.cavernsandcardsproto.AttackCard;
-import meindratheal.collab.cavernsandcardsproto.Deck;
+import meindratheal.collab.cavernsandcardsproto.cardzones.DeckImpl;
+import meindratheal.collab.cavernsandcardsproto.cardzones.ModifiableDeck;
 
 /**
  *
@@ -18,9 +19,9 @@ public final class TestingCards
 		throw new AssertionError();
 	}
 
-	public static Deck createDeck()
+	public static ModifiableDeck createDeck()
 	{
-		return new Deck(Arrays.asList(
+		return new DeckImpl(Arrays.asList(
 				new AttackCard("Sure Strike", 12, 2),
 				new AttackCard("Sure Strike", 12, 2),
 				new AttackCard("Sure Strike", 12, 2),

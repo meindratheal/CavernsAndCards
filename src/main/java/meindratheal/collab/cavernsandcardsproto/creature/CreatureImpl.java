@@ -1,19 +1,18 @@
-package meindratheal.collab.cavernsandcardsproto;
+package meindratheal.collab.cavernsandcardsproto.creature;
 
 import static com.google.common.base.Preconditions.*;
 
 /**
- * A Creature. Creatures are the in-game avatars of the players, and have a
- * name, hit points, and AC.
+ * Basic implementation of the {@link ModifiableCreature} interface.
  * @author Meindratheal
  */
-public class Creature
+public final class CreatureImpl implements ModifiableCreature
 {
 	private final String name;
 	private int hp;
 	private final int ac;
 
-	public Creature(final String name, final int hp, final int ac)
+	public CreatureImpl(final String name, final int hp, final int ac)
 	{
 		this.name = checkNotNull(name, "name");
 		this.hp = hp;
@@ -22,22 +21,26 @@ public class Creature
 		checkArgument(ac >= 0, "ac must be non-negative");
 	}
 
+	@Override
 	public String name()
 	{
 		return name;
 	}
 
+	@Override
 	public int hp()
 	{
 		return hp;
 	}
 
+	@Override
 	public int ac()
 	{
 		return ac;
 	}
 
-	public void dealDamage(final int damage)
+	@Override
+	public int dealDamage(final int damage)
 	{
 		if(damage > hp)
 		{
@@ -47,5 +50,6 @@ public class Creature
 		{
 			hp -= damage;
 		}
+		return hp();
 	}
 }

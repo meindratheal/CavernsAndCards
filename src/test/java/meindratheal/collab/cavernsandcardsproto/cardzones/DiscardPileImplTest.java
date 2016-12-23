@@ -1,5 +1,6 @@
-package meindratheal.collab.cavernsandcardsproto;
+package meindratheal.collab.cavernsandcardsproto.cardzones;
 
+import meindratheal.collab.cavernsandcardsproto.AttackCard;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -8,12 +9,13 @@ import static org.junit.Assert.*;
  *
  * @author Meindratheal
  */
-public class DiscardPileTest
+public class DiscardPileImplTest
 {
+
 	@Test
 	public void testDefaultConstructor()
 	{
-		final DiscardPile pile = new DiscardPile();
+		final DiscardPileImpl pile = new DiscardPileImpl();
 		assertEquals(0, pile.size());
 		//Try peeking and removing.
 		try
@@ -39,7 +41,7 @@ public class DiscardPileTest
 	@Test
 	public void testDiscardCards()
 	{
-		final DiscardPile pile = new DiscardPile();
+		final DiscardPileImpl pile = new DiscardPileImpl();
 		pile.discard(new AttackCard("A", 1, 1));
 		assertEquals(1, pile.size());
 		pile.discard(new AttackCard("B", 2, 2));
@@ -54,7 +56,7 @@ public class DiscardPileTest
 	@Test
 	public void testRemoveCards()
 	{
-		final DiscardPile pile = new DiscardPile();
+		final DiscardPileImpl pile = new DiscardPileImpl();
 		pile.discard(new AttackCard("A", 1, 1));
 		pile.discard(new AttackCard("B", 2, 2));
 		pile.discard(new AttackCard("C", 3, 3));
