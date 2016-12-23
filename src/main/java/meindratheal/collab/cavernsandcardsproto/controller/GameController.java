@@ -1,8 +1,10 @@
-package meindratheal.collab.cavernsandcardsproto;
+package meindratheal.collab.cavernsandcardsproto.controller;
 
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
+import meindratheal.collab.cavernsandcardsproto.AttackCard;
+import meindratheal.collab.cavernsandcardsproto.RulesConstants;
 
 import static com.google.common.base.Preconditions.*;
 

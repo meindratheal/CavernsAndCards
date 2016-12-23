@@ -1,6 +1,8 @@
-package meindratheal.collab.cavernsandcardsproto;
+package meindratheal.collab.cavernsandcardsproto.controller;
 
 import java.util.function.ToIntFunction;
+import meindratheal.collab.cavernsandcardsproto.Card;
+import meindratheal.collab.cavernsandcardsproto.RulesConstants;
 import meindratheal.collab.cavernsandcardsproto.cardzones.DiscardPileImpl;
 import meindratheal.collab.cavernsandcardsproto.cardzones.HandImpl;
 import meindratheal.collab.cavernsandcardsproto.cardzones.ModifiableDeck;
