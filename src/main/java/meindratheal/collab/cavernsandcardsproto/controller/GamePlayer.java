@@ -1,6 +1,5 @@
 package meindratheal.collab.cavernsandcardsproto.controller;
 
-import java.util.function.ToIntFunction;
 import meindratheal.collab.cavernsandcardsproto.Card;
 import meindratheal.collab.cavernsandcardsproto.RulesConstants;
 import meindratheal.collab.cavernsandcardsproto.cardzones.DiscardPileImpl;
@@ -8,9 +7,8 @@ import meindratheal.collab.cavernsandcardsproto.cardzones.HandImpl;
 import meindratheal.collab.cavernsandcardsproto.cardzones.ModifiableDeck;
 import meindratheal.collab.cavernsandcardsproto.cardzones.ModifiableDiscardPile;
 import meindratheal.collab.cavernsandcardsproto.cardzones.ModifiableHand;
-import meindratheal.collab.cavernsandcardsproto.cardzones.ReadableHand;
 import meindratheal.collab.cavernsandcardsproto.creature.ModifiableCreature;
-import meindratheal.collab.cavernsandcardsproto.creature.ReadableCreature;
+import meindratheal.collab.cavernsandcardsproto.scripting.PlayerScript;
 
 import static com.google.common.base.Preconditions.*;
 
@@ -27,29 +25,30 @@ public final class GamePlayer
 	private final ModifiableDeck deck;
 	private final ModifiableHand hand;
 	private final ModifiableDiscardPile discards;
-	private final ToIntFunction<ReadableHand> chooseAttackCardFn;
+	private final PlayerScript script;
 
 	public GamePlayer(final ModifiableCreature creature,
 					  final ModifiableDeck deck,
-					  ToIntFunction<ReadableHand> chooseAttackCardFn)
+					  final PlayerScript script)
 	{
 		checkNotNull(creature, "creature");
 		checkNotNull(deck, "deck");
-		checkNotNull(chooseAttackCardFn, "chooseAttackCardFn");
+		checkNotNull(script, "script");
 		checkArgument(deck.size() > RulesConstants.minDeckSize(),
 					  "initial deck too small");
 		this.creature = creature;
 		this.deck = deck.copy();
 		this.hand = new HandImpl();
 		this.discards = new DiscardPileImpl();
-		this.chooseAttackCardFn = chooseAttackCardFn;
+		this.script = script;
 	}
 
 	/**
 	 * Draws a card from the deck into the hand. If the deck has at least one
 	 * card, the top card is drawn and added to the hand. Otherwise, the cards
 	 * in the discard pile are added to the empty deck and shuffled, then the
-	 * top card is drawn and added to the hand.
+	 * top card is drawn and added to the hand. Due to current game mechanics,
+	 * it will always be possible to draw a card.
 	 * @return The card drawn.
 	 */
 	Card drawCard()
@@ -67,33 +66,31 @@ public final class GamePlayer
 		//Deck now has at least one card.
 		final Card drawn = deck.drawCard();
 		hand.add(drawn);
-		System.out.printf("You drew %s%n", drawn.name());
 		return drawn;
 	}
 
-	void shuffleDeck()
-	{
-		deck.shuffle();
-	}
-
-	//Chooses a card from the hand and discards it, returning that card.
-	Card chooseAndPlayCard()
-	{
-		final Card chosen = hand.remove(chooseAttackCardFn.applyAsInt(hand));
-		discards.discard(chosen);
-		System.out.printf("%s plays %s!%n", creature.name(), chosen.name());
-		return chosen;
-	}
-
-	int dealDamage(final int damage)
-	{
-		checkArgument(damage > 0, "damage must be positive");
-		creature.dealDamage(damage);
-		return creature.hp();
-	}
-
-	ReadableCreature creature()
+	ModifiableCreature creature()
 	{
 		return creature;
+	}
+
+	ModifiableDeck deck()
+	{
+		return deck;
+	}
+
+	ModifiableHand hand()
+	{
+		return hand;
+	}
+
+	ModifiableDiscardPile discards()
+	{
+		return discards;
+	}
+
+	PlayerScript script()
+	{
+		return script;
 	}
 }

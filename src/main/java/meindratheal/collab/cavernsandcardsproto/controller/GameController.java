@@ -3,6 +3,7 @@ package meindratheal.collab.cavernsandcardsproto.controller;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
+import java.util.function.IntConsumer;
 import meindratheal.collab.cavernsandcardsproto.AttackCard;
 import meindratheal.collab.cavernsandcardsproto.RulesConstants;
 
@@ -34,42 +35,46 @@ public final class GameController
 		while(true)
 		{
 			final GamePlayer turnPlayer = players.get(turnPlayerNum);
+			final GamePlayer enemyPlayer = players.get(
+					turnPlayerNum == 0 ? 1 : 0);
 			System.out.printf("Player %d's turn [%s, %d HP]%n",
 							  turnPlayerNum,
 							  turnPlayer.creature().name(),
 							  turnPlayer.creature().hp());
 			//Draw Phase.
-			turnPlayer.drawCard();
+			turnPlayer.script().enterDrawPhase(
+					new ReadOnlyApi(TurnPhase.DRAW, turnPlayer, enemyPlayer));
+			turnPlayer.script().onCardDrawn(
+					new ReadOnlyApi(TurnPhase.DRAW, turnPlayer, enemyPlayer),
+					turnPlayer.drawCard());
 			//Battle Phase.
-			//Skip step 1. Hand size will always be 4 here with these rules.
-			//Step 2: Choose card to use.
-			final AttackCard card = (AttackCard) turnPlayer.chooseAndPlayCard();
-			//Step 3. First, roll the d20 and add its value to the card's toHit.
-			final int roll = rollD20();
-			System.out.printf("You rolled a %d%n", roll);
-			final int accuracy = roll + card.toHitBonus();
-			//If this is >= the target's AC, do the card's damage.
-			final GamePlayer target = players.get(turnPlayerNum == 0 ? 1 : 0);
-			System.out.printf("Your accuracy is %d%nYour target's AC is %d%n", accuracy, target.creature().ac());
-			if(accuracy > target.creature().ac())
+			turnPlayer.script().enterBattlePhase(
+					new ReadOnlyApi(TurnPhase.BATTLE, turnPlayer, enemyPlayer));
+			//Set up for step 1a: If a card is played, this callback is invoked.
+			final IntConsumer playCardCallback = createOnPlayCardCallback(
+					turnPlayer, enemyPlayer);
+			//Step 1: Play either 0 or 1 cards.
+			turnPlayer.script().onReceivePriority(
+					new BattlePhaseApi(turnPlayer, enemyPlayer, playCardCallback));
+			//Step 2: Check enemy HP.
+			if(enemyPlayer.creature().hp() == 0)
 			{
-				final int damage = card.damage();
-				System.out.printf("You did %d damage!%n", damage);
-				final int remainingHp = target.dealDamage(damage);
-				System.out.printf("%s has %d HP%n", target.creature().name(), remainingHp);
-				if(remainingHp == 0)
-				{
-					//Game over!
-					System.out.println("You win!");
-					break;
-				}
+				//Game over!
+				System.out.println("You win!");
+				break;
 			}
-			else
+			//End Phase.
+			turnPlayer.script().enterEndPhase(
+					new ReadOnlyApi(TurnPhase.END, turnPlayer, enemyPlayer));
+			//Step 1: If over hand limit, discard cards.
+			//Do this in a loop in case the script doesn't discard enough.
+			final int handLimit = RulesConstants.maxHandSize();
+			while(turnPlayer.hand().size() > handLimit)
 			{
-				System.out.println("You missed!");
+				turnPlayer.script().discardToHandLimit(
+						new TurnEndDiscardApi(turnPlayer, enemyPlayer, handLimit),
+						handLimit);
 			}
-			
-			//End Phase. Can never reach the hand limit with these rules.
 			//Next player's turn.
 			turnPlayerNum = (turnPlayerNum + 1) % players.size();
 		}
@@ -84,7 +89,7 @@ public final class GameController
 		//Step 1: Shuffle all decks.
 		for(GamePlayer player : players)
 		{
-			player.shuffleDeck();
+			player.deck().shuffle();
 		}
 		//Step 3: Initial draws.
 		for(GamePlayer player : players)
@@ -95,9 +100,43 @@ public final class GameController
 			}
 		}
 	}
-	
+
 	private int rollD20()
 	{
 		return rng.nextInt(20) + 1;
+	}
+
+	private IntConsumer createOnPlayCardCallback(final GamePlayer turnPlayer,
+												 final GamePlayer enemyPlayer)
+	{
+		return idx ->
+		{
+			//Remove the card from the hand and add to discards.
+			final AttackCard card = (AttackCard) turnPlayer.hand()
+					.remove(idx);
+			turnPlayer.discards().discard(card);
+			//Step 3. First, roll the d20 and add its value to the card's toHit.
+			final int roll = rollD20();
+			System.out.printf("You rolled a %d%n", roll);
+			final int accuracy = roll + card.toHitBonus();
+			//If this is >= the target's AC, do the card's damage.
+			System.out.printf(
+					"Your accuracy is %d%nYour target's AC is %d%n",
+					accuracy, enemyPlayer.creature().ac());
+			if(accuracy > enemyPlayer.creature().ac())
+			{
+				final int damage = card.damage();
+				System.out.printf("You did %d damage!%n", damage);
+				final int remainingHp = enemyPlayer.creature().dealDamage(
+						damage);
+				System.out.printf("%s has %d HP%n", enemyPlayer.creature()
+								  .name(),
+								  remainingHp);
+			}
+			else
+			{
+				System.out.println("You missed!");
+			}
+		};
 	}
 }
